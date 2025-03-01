@@ -159,7 +159,8 @@ def test():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
+
     
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/motivation.png" http://127.0.0.1:5000/read_braille
