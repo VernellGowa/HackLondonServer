@@ -6,3 +6,4 @@ googletrans
 google-genai
 openai
 asyncio
+inference-sdk
