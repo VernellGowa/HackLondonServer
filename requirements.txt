@@ -2,9 +2,8 @@ Flask
 gunicorn
 werkzeug
 gTTS
-googletrans==4.0.0-rc1
-google-generativeai
+googletrans==4.0.2
 openai
 asyncio
-google-genai
-inference
+google-genai==1.3.0
+inference==0.40.0
