@@ -151,6 +151,12 @@ def analyse_image_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/test', methods=['GET'])
+def test():
+    try:
+        return jsonify({"analysis": "test"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
