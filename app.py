@@ -130,6 +130,7 @@ def text_to_audio():
     try:
         data = request.json
         text = data.get('text')
+        print(text)
         target_language = data.get('lang', 'en')
         if not text:
             return "No text provided", 400
