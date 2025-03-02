@@ -183,3 +183,4 @@ if __name__ == '__main__':
     app.run(debug=True)
     
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" http://127.0.0.1:5000/read_braille
+# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondonserver.onrender.com/read_braille
