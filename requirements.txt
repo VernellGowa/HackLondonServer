@@ -3,7 +3,6 @@ gunicorn
 werkzeug
 gTTS
 googletrans
-google-genai
 openai
 asyncio
-inference-sdk
+ultralytics

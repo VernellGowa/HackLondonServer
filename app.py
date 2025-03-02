@@ -4,7 +4,6 @@ import os
 from gtts import gTTS
 import asyncio
 from googletrans import Translator
-from google import genai
 from inference import get_detected_text
 from openai import OpenAI
 
