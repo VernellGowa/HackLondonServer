@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import sys
-from inference_sdk import InferenceHTTPClient
-import string
 from ultralytics import YOLO
 import numpy as np
 
