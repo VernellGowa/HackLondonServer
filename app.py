@@ -8,7 +8,7 @@ from inference import get_detected_text
 from openai import OpenAI
 
 translator = Translator()
-client = OpenAI()
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 def analyse_image(base64_image):
     response = client.chat.completions.create(
