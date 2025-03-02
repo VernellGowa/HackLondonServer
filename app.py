@@ -134,7 +134,7 @@ def read_braille_ai():
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": "https://hacklondonserver.onrender.com/braille/" + file.filename,
+                                "url": "https://hacklondon-897572133117.us-central1.run.app/braille/" + file.filename,
                             },
                         },
                     ],
@@ -183,6 +183,8 @@ if __name__ == '__main__':
     
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" http://127.0.0.1:5000/read_braille
 
-# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondonserver.onrender.com/read_braille
+# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondon-897572133117.us-central1.run.app/read_braille
 
-# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondonserver.onrender.com/analyse_image
+# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondon-897572133117.us-central1.run.app/analyse_image
+
+# 
