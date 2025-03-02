@@ -179,7 +179,8 @@ def analyse_image_endpoint():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    port = int(os.environ.get("PORT", 8080))  # Use Cloud Run's port
+    app.run(host='0.0.0.0', port=port)
     
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" http://127.0.0.1:5000/read_braille
 
