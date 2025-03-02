@@ -6,3 +6,4 @@ googletrans
 openai
 asyncio
 ultralytics
+numpy
