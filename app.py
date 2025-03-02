@@ -110,7 +110,11 @@ def read_braille_ai():
         file = request.files['image']
         
         # Save the image to a temporary location
-        temp_image_path = "/tmp/" + file.filename
+        temp_dir = "tmp"
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+
+        temp_image_path = os.path.join(temp_dir, file.filename)
         file.save(temp_image_path)
 
         get_detected_text(temp_image_path)
@@ -178,5 +182,7 @@ if __name__ == '__main__':
     app.run(debug=True)
     
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" http://127.0.0.1:5000/read_braille
+
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondonserver.onrender.com/read_braille
+
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondonserver.onrender.com/analyse_image

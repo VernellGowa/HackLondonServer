@@ -23,6 +23,8 @@ def get_detected_text(image_path):
     """
     Runs inference on the given image and returns the detected Braille text.
     """
+    print(f"File saved to {image_path}")
+
     file_name = image_path.split("/")[-1]
     
     results = model(image_path)  # Use the preloaded model
