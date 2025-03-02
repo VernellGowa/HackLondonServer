@@ -10,7 +10,8 @@ def annotate_image(image_path):
     file_name = image_path.split("/")[-1]
 
     # Load trained model
-    model = YOLO("best.pt")
+    model = YOLO("runs/detect/train4/weights/best.pt")
+    # runs/detect/train4/weights/last.pt
     results = model(image_path)
 
     for result in results:
@@ -23,7 +24,7 @@ def get_detected_text(image_path):
     file_name = image_path.split("/")[-1]
 
     # Load trained model
-    model = YOLO("best.pt")
+    model = YOLO("runs/detect/train4/weights/best.pt")
     results = model(image_path)
     # Load class names from the model
     class_names = model.names  # Dictionary mapping class indices to names
