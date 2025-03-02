@@ -2,73 +2,73 @@
 import sys
 from inference_sdk import InferenceHTTPClient
 import string
+from ultralytics import YOLO
+import numpy as np
 
-def group_predictions_by_row(predictions, row_tolerance=10):
+def annotate_image(image_path):
     """
-    Groups predictions into rows by comparing their y-coordinates.
-    Any detections within row_tolerance pixels are assumed to be on the same row.
+    Runs inference on the given image and returns the detected Braille text.
     """
-    # First, sort by y-coordinate
-    predictions = sorted(predictions, key=lambda p: p['y'])
-    rows = []
-    current_row = []
-    current_y = None
+    file_name = image_path.split("/")[-1]
 
-    for pred in predictions:
-        if current_y is None:
-            current_row.append(pred)
-            current_y = pred['y']
-        elif abs(pred['y'] - current_y) <= row_tolerance:
-            current_row.append(pred)
-        else:
-            rows.append(current_row)
-            current_row = [pred]
-            current_y = pred['y']
-    if current_row:
-        rows.append(current_row)
-    return rows
+    # Load trained model
+    model = YOLO("runs/detect/train4/weights/best.pt")
+    results = model(image_path)
 
-def sort_row_by_x(row):
-    """Sorts a row of predictions by their x-coordinate (left-to-right)."""
-    return sorted(row, key=lambda p: p['x'])
+    for result in results:
+        result.save(filename=f'braille/{file_name}')
 
 def get_detected_text(image_path):
     """
     Runs inference on the given image and returns the detected Braille text.
     """
-    client = InferenceHTTPClient(api_url="https://detect.roboflow.com",
-                                 api_key="0WnL5kEsSRdVu6TUhf6A")
-    result = client.infer(image_path, model_id="braille-detection/2")
-    
-    if 'predictions' not in result:
-        print("No predictions found in the result.")
-        sys.exit(1)
-    
-    predictions = result['predictions']
-    # Group detections into rows
-    rows = group_predictions_by_row(predictions, row_tolerance=10)
-    
-    # Process each row: sort by x-coordinate and extract the predicted letter
-    text_rows = []
-    for row in rows:
-        sorted_row = sort_row_by_x(row)
-        row_text = ''.join(pred.get('class', '') for pred in sorted_row)
-        text_rows.append(row_text)
-    
-    # Combine rows into final text (separated by newline)
-    final_text = "\n".join(text_rows)
-    print("Detected Text:")
-    print(final_text)
-    
-    # Optional: Check if the full alphabet is present
-    all_letters = ''.join(final_text.split())
-    expected_alphabet = set(string.ascii_uppercase)
-    if expected_alphabet.issubset(set(all_letters)):
-        print("\nThis image appears to contain the full Braille alphabet!")
-    else:
-        print("\nWarning: The detected text does not appear to cover the full alphabet.")
-    
-    return final_text
+    file_name = image_path.split("/")[-1]
+
+    # Load trained model
+    model = YOLO("runs/detect/train4/weights/best.pt")
+    results = model(image_path)
+    # Load class names from the model
+    class_names = model.names  # Dictionary mapping class indices to names
+
+    detections = []
+
+    for result in results:
+        for box in result.boxes:
+            class_id = int(box.cls)  # Get class ID
+            label = class_names[class_id]  # Get class name
+            confidence = box.conf.item()  # Confidence score
+            x_min = box.xyxy[0][0].item()  # Left X coordinate
+            y_min = box.xyxy[0][1].item()  # Top Y coordinate
+
+            detections.append((x_min, y_min, label, confidence))
+
+        result.save(filename=f'braille/{file_name}')
+
+    # Convert detections to NumPy array for sorting
+    detections = np.array(detections, dtype=object)
+
+    # Sort by Y-coordinate first
+    detections = detections[detections[:, 1].argsort()]
+
+    # Group by rows using a Y threshold (to cluster letters in the same row)
+    y_threshold = 20  # Adjust if needed
+    rows = []
+    current_row = [detections[0]]
+
+    for i in range(1, len(detections)):
+        if abs(detections[i, 1] - current_row[-1][1]) < y_threshold:
+            current_row.append(detections[i])
+        else:
+            rows.append(sorted(current_row, key=lambda x: x[0]))  # Sort row by X-coordinates
+            current_row = [detections[i]]
+
+    # Append last row
+    if current_row:
+        rows.append(sorted(current_row, key=lambda x: x[0]))
+
+    # Flatten sorted rows into the final ordered text
+    ordered_text = "".join([char[2] for row in rows for char in row])
+    return ordered_text
 
 # When running this file directly, use command-line arguments.
 if __name__ == '__main__':

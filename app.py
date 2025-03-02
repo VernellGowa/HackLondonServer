@@ -86,6 +86,27 @@ def upload_image():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# @app.route('/read_braille', methods=['POST'])
+# def read_braille():
+#     try:
+#         if 'image' not in request.files:
+#             return jsonify({"error": "No image file provided"}), 400
+        
+#         file = request.files['image']
+        
+#         # Save the image to a temporary location
+#         temp_image_path = "/tmp/" + file.filename
+#         file.save(temp_image_path)
+
+#         detected_text = get_detected_text(temp_image_path)
+        
+#         if not detected_text:
+#             return jsonify({"error": str(e)}), 500
+        
+#         return jsonify({"response": detected_text})
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+    
 @app.route('/read_braille', methods=['POST'])
 def read_braille():
     try:
@@ -98,30 +119,37 @@ def read_braille():
         temp_image_path = "/tmp/" + file.filename
         file.save(temp_image_path)
 
-        client = genai.Client(api_key="AIzaSyAna9p5EPBQ-ArE6J-ac_XJasN0o20adf0")
-        
-        # Get the detected Braille text from inference.py using the saved image path
-        detected_text = get_detected_text(temp_image_path)
-        
-        if not detected_text:
-            print("No Braille text detected.")
-            return
-        
-        # Construct a prompt for Google Gemini.
-        prompt = f"""I have detected the following Braille pattern from an image:
+        get_detected_text(temp_image_path)
 
-        {detected_text}
-
-        Assuming this pattern was meant to represent a complete sequence, output only the corrected sequence in one line. For example, if the pattern is meant to be the alphabet, output "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z". If it's a numerical sequence, output the corrected numbers in order. Do not include any additional commentary or warnings.
-        If it is not the alphabet, then it will be 'You can do it' which is what I want you to respond with
-        """
-
-        # Query Google Gemini.
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
+        response = client.chat.completions.create(
+            model="o1",
+            messages=[
+                {"role": "developer", "content": "You are a helpful assistant which translates annotated Braille text to spoken language."},
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                "Analyze the provided image and output the Braille text. " ),
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": "https://hacklondonserver.onrender.com/braille/" + file.filename,
+                            },
+                        },
+                    ],
+                }
+            ],
         )
-        return jsonify({"response": response.text})
+        text = response.choices[0].message.content
+        print(text)
+        
+        if not text:
+            return jsonify({"error": str(e)}), 500
+        
+        return jsonify({"response": text})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -130,7 +158,6 @@ def text_to_audio():
     try:
         data = request.json
         text = data.get('text')
-        print(text)
         target_language = data.get('lang', 'en')
         if not text:
             return "No text provided", 400
@@ -152,15 +179,8 @@ def analyse_image_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/test', methods=['GET'])
-def test():
-    try:
-        return jsonify({"analysis": "test"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
-
+if __name__ == '__main__':
+    app.run(debug=True)
     
-# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/motivation.png" http://127.0.0.1:5000/read_braille
+# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" http://127.0.0.1:5000/read_braille
