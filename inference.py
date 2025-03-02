@@ -3,6 +3,10 @@ import sys
 from ultralytics import YOLO
 import numpy as np
 
+# Load the model once at startup
+MODEL_PATH = "runs/detect/train4/weights/best.pt"
+model = YOLO(MODEL_PATH)  # Load only once
+
 def annotate_image(image_path):
     """
     Runs inference on the given image and returns the detected Braille text.
@@ -10,8 +14,6 @@ def annotate_image(image_path):
     file_name = image_path.split("/")[-1]
 
     # Load trained model
-    model = YOLO("runs/detect/train4/weights/best.pt")
-    # runs/detect/train4/weights/last.pt
     results = model(image_path)
 
     for result in results:
@@ -22,15 +24,11 @@ def get_detected_text(image_path):
     Runs inference on the given image and returns the detected Braille text.
     """
     file_name = image_path.split("/")[-1]
-
-    # Load trained model
-    model = YOLO("runs/detect/train4/weights/best.pt")
-    results = model(image_path)
-    # Load class names from the model
+    
+    results = model(image_path)  # Use the preloaded model
     class_names = model.names  # Dictionary mapping class indices to names
 
     detections = []
-
     for result in results:
         for box in result.boxes:
             class_id = int(box.cls)  # Get class ID
@@ -68,10 +66,3 @@ def get_detected_text(image_path):
     # Flatten sorted rows into the final ordered text
     ordered_text = "".join([char[2] for row in rows for char in row])
     return ordered_text
-
-# When running this file directly, use command-line arguments.
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Usage: python inference.py <path_to_image>")
-    else:
-        get_detected_text(sys.argv[1])

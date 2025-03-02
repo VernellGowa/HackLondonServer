@@ -66,7 +66,7 @@ def generate_audio(text, target_language):
         output_path = os.path.join(output_dir, "output.mp3")
         tts.save(output_path)
 
-        os.system(f"mpg321 {output_path}")
+        # os.system(f"mpg321 {output_path}")
 
         return "Audio file created successfully", 200
     except Exception as e:
@@ -92,17 +92,12 @@ def read_braille():
             return jsonify({"error": "No image file provided"}), 400
         
         file = request.files['image']
-        
-        # Save the image to a temporary location
         temp_image_path = "/tmp/" + file.filename
         file.save(temp_image_path)
 
         detected_text = get_detected_text(temp_image_path)
         
-        if not detected_text:
-            return jsonify({"error": str(e)}), 500
-        
-        return jsonify({"response": detected_text})
+        return jsonify({"response": detected_text}) if detected_text else jsonify({"error": "No text detected"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -184,3 +179,4 @@ if __name__ == '__main__':
     
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" http://127.0.0.1:5000/read_braille
 # curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondonserver.onrender.com/read_braille
+# curl -X POST -F "image=@/Users/vernellgowa/Vernell/Uni/HackLondon2025/alphabet.png" https://hacklondonserver.onrender.com/analyse_image
