@@ -85,29 +85,29 @@ def upload_image():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# @app.route('/read_braille', methods=['POST'])
-# def read_braille():
-#     try:
-#         if 'image' not in request.files:
-#             return jsonify({"error": "No image file provided"}), 400
-        
-#         file = request.files['image']
-        
-#         # Save the image to a temporary location
-#         temp_image_path = "/tmp/" + file.filename
-#         file.save(temp_image_path)
-
-#         detected_text = get_detected_text(temp_image_path)
-        
-#         if not detected_text:
-#             return jsonify({"error": str(e)}), 500
-        
-#         return jsonify({"response": detected_text})
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-    
 @app.route('/read_braille', methods=['POST'])
 def read_braille():
+    try:
+        if 'image' not in request.files:
+            return jsonify({"error": "No image file provided"}), 400
+        
+        file = request.files['image']
+        
+        # Save the image to a temporary location
+        temp_image_path = "/tmp/" + file.filename
+        file.save(temp_image_path)
+
+        detected_text = get_detected_text(temp_image_path)
+        
+        if not detected_text:
+            return jsonify({"error": str(e)}), 500
+        
+        return jsonify({"response": detected_text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/read_braille_ai', methods=['POST'])
+def read_braille_ai():
     try:
         if 'image' not in request.files:
             return jsonify({"error": "No image file provided"}), 400
