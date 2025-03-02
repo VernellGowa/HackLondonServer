@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import sys
 from ultralytics import YOLO
 import numpy as np
 

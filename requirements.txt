@@ -1,9 +1,5 @@
-Flask
-gunicorn
-werkzeug
-gTTS
-googletrans
-openai
-asyncio
-ultralytics
-numpy
+Flask==3.1.0
+gunicorn==23.0.0
+openai==1.65.2
+ultralytics==8.3.81
+numpy==1.26.4
